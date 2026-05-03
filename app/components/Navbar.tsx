@@ -13,7 +13,7 @@ import { TrainFront } from "lucide-react";
 import { cn } from "@/app/lib/utils"; // Utilitaire classique pour fusionner les classes
 
 const NAV_LINKS = [
-  { name: "Trajets", href: "/trajets" },
+  { name: "Trajets", href: "/" },
   { name: "Statistiques", href: "/statistiques" },
   { name: "Supervision", href: "/supervision" },
   { name: "Documentation", href: "/documentation" },
@@ -37,7 +37,6 @@ export default function Navbar() {
           ObRail <span className="text-blue-600">Europe</span>
         </span>
       </div>
-
       {/* Liens de Navigation */}
       <NavigationMenu className="pl-24">
         <NavigationMenuList className="gap-2">
@@ -47,18 +46,21 @@ export default function Navbar() {
 
             return (
               <NavigationMenuItem key={link.href}>
-                <Link href={link.href} legacyBehavior passHref>
-                  <NavigationMenuLink
-                    className={cn(
-                      navigationMenuTriggerStyle(), // Styles de base (hover, focus, transition)
-                      "text-sm font-medium",
-                      isActive ? "bg-blue-50 text-blue-600 hover:bg-blue-50 hover:text-blue-600" : "text-slate-600",
-                    )}
+                {/* On ajoute 'asChild' sur NavigationMenuLink 
+                  Cela lui dit : "ne crée pas de <a>, utilise celui de mon enfant" */}
+                <NavigationMenuLink asChild active={isActive}>
+                  <Link
+                    href={link.href}
                     aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      "text-sm font-medium transition-all",
+                      isActive ? "bg-blue-50 text-blue-600 focus:bg-blue-50 focus:text-blue-600" : "text-slate-600",
+                    )}
                   >
                     {link.name}
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             );
           })}
