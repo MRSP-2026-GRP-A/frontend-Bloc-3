@@ -17,33 +17,52 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Field, FieldLabel } from "@/components/ui/field";
-export default function RoutesTable() {
+import { Route } from "../types/routes";
+import { Button } from "@/components/ui/button";
+export default function RoutesTable({ routes }: { routes: Route[] }) {
   return (
-    <Table>
+    <Table className="shadow-xl inset-shadow-xs">
       <TableCaption>La liste de toutes nos routes en bdd.</TableCaption>
-      <TableHeader>
+      <TableHeader className="w-full">
         <TableRow>
-          <TableHead className="w-25">Nom </TableHead>
-          <TableHead>Route</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Operateur</TableHead>
-          <TableHead>Durée</TableHead>
-          <TableHead>Co2 économisés</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="w-1/6">Nom du trajet</TableHead>
+          <TableHead className="w-1/6">Depart→ Arrive</TableHead>
+          <TableHead className="w-1/6">Type</TableHead>
+          <TableHead className="w-1/6">Operateur</TableHead>
+          <TableHead className="w-1/6">Durée</TableHead>
+          <TableHead className="w-1/6">Co2 économisés</TableHead>
+          <TableHead className="text-right!"> Voir le trajet</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
-        <TableRow>
-          <TableCell className="font-medium">INV001</TableCell>
-          <TableCell>Paid</TableCell>
-          <TableCell>Credit Card</TableCell>
-          <TableCell>Paid</TableCell>
-          <TableCell>Paid</TableCell>
-          <TableCell>Paid</TableCell>
-          <TableCell className="text-right">$250.00</TableCell>
-        </TableRow>
+      <TableBody className="w-full">
+        {routes.map((route) => (
+          <TableRow key={route.id}>
+            <TableCell>{route.line_name}</TableCell>
+            <TableCell>
+              {route.depart} → {route.arrive}
+            </TableCell>
+            <TableCell>
+              <Badge
+                className={
+                  route.heure_depart >= 22 || route.heure_depart < 6
+                    ? "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-indigo-200" // Style Nuit
+                    : "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200" // Style Jour
+                }
+              >
+                {route.heure_depart >= 22 || route.heure_depart < 6 ? "🌙 Nuit" : "☀️ Jour"}
+              </Badge>
+            </TableCell>
+            <TableCell>{route.operateur}</TableCell>
+            <TableCell>{route.line_name}</TableCell>
+            <TableCell className=" text-green-500">🍃{(route.distance * 0.255).toFixed(2)} kg</TableCell>
+            <TableCell className="text-right!">
+              <Button className="rounded-full">...</Button>
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
       <TableFooter>
         <TableRow>

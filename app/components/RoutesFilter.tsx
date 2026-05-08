@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/app/lib/utils"; // Utilitaire classique pour fusionner les classes
 
 const FILTERS = [
-  { id: "all", label: "All Routes" },
-  { id: "day", label: "Day Trains" },
-  { id: "night", label: "Night Trains" },
+  { id: "all", label: "Toutes les routes" },
+  { id: "day", label: "Trains de jour" },
+  { id: "night", label: "Trains de nuit" },
   // ... tes autres filtres
 ];
 
