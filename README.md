@@ -1,40 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend ObRail Europe
 
-## Getting Started
+Application web de gestion et de consultation de trajets ferroviaires européens, construite avec Next.js et React.
 
-First, run the development server:
+## Fonctionnalités
+
+- Liste des routes dans un tableau.
+- Filtre de recherche sur les trajets.
+- Affichage des informations principales d’une route.
+- Interface construite avec des composants Shadcn UI.
+
+## Stack technique
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Shadcn UI
+- Lucide React pour les icônes
+
+## Prérequis
+
+- Node.js récent
+- pnpm recommandé
+
+## Installation
 
 ```bash
-npm install
-npm install lucide-react
-npm install clsx tailwind-merge
-# then
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Lancer le projet en local
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Ensuite, ouvre [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+## Scripts disponibles
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm dev
+pnpm build
+pnpm start
+pnpm lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure du projet
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `app/page.tsx` : page principale avec la liste des routes et le filtre.
+- `app/components/RoutesTable.tsx` : tableau des trajets.
+- `app/components/RoutesFilter.tsx` : filtres complémentaires.
+- `app/trajet/page.tsx` : page de détail d’un trajet.
+- `components/ui/` : composants d’interface réutilisables.
 
-## Deploy on Vercel
+## Remarque
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Les données affichées dans l’application sont actuellement statiques et servent de base pour le développement.
