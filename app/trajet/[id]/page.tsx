@@ -3,7 +3,7 @@ import { Train, Moon, Sun, Leaf, ArrowLeft, CircleDot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type Route = {
-  id: string;
+  id: number;
   line_name: string;
   depart: string;
   arrive: string;
@@ -39,22 +39,52 @@ function co2Economise(distance: number) {
   return Math.round(((255 - 14) / 255) * 100);
 }
 
-const demoRoute: Route = {
-  id: "1",
-  line_name: "Durant",
-  depart: "Paul",
-  arrive: "Marseille",
-  heure_depart: 22,
-  heure_arrive: 8,
-  distance: 165,
-  operateur: "ÖBB Nightjet",
-  pays: ["France", "Suisse", "Autriche"],
-  frequence: "Quotidienne",
-  actif: true,
-};
+const demoRoute: Route[] = [
+  {
+    id: 1,
+    line_name: "Durant",
+    depart: "Paul",
+    arrive: "Marseille",
+    heure_depart: 22,
+    heure_arrive: 8,
+    operateur: "ÖBB Nightjet",
+    distance: 165,
+    pays: ["France", "Autriche"],
+    frequence: "Quotidienne",
+    actif: true,
+  },
+  {
+    id: 2,
+    line_name: "Durant",
+    depart: "Paul",
+    arrive: "Marseille",
+    heure_depart: 8,
+    heure_arrive: 22,
+    operateur: "ÖBB JOUR",
+    distance: 999,
+    pays: ["France", "Allemagne"],
+    frequence: "Hebdomadaire",
+    actif: false,
+  },
+  {
+    id: 3,
+    line_name: "Durant",
+    depart: "Paul",
+    arrive: "Marseille",
+    heure_depart: 20,
+    heure_arrive: 14,
+    operateur: "ÖBB VLADIMIR",
+    distance: 667,
+    pays: ["France", "Suisse", "Italie"],
+    frequence: "Bihebdomadaire",
+    actif: true,
+  },
+];
 
-export default function RouteDetail() {
-  const route = demoRoute;
+export default async function RouteDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const routeId = parseInt(id, 10);
+  const route = demoRoute.find((r) => r.id === routeId) || demoRoute[0];
   const nuit = isNuit(route.heure_depart);
   const depasse = route.heure_arrive < route.heure_depart;
 

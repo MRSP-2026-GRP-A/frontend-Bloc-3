@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Route } from "../types/routes";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 export default function RoutesTable({ routes }: { routes: Route[] }) {
   return (
     <Table className="shadow-xl inset-shadow-xs">
@@ -59,7 +60,9 @@ export default function RoutesTable({ routes }: { routes: Route[] }) {
             <TableCell>{route.line_name}</TableCell>
             <TableCell className=" text-green-500">🍃{(route.distance * 0.255).toFixed(2)} kg</TableCell>
             <TableCell className="text-right!">
-              <Button className="rounded-full">...</Button>
+              <Button className="rounded-full" asChild>
+                <Link href={`/trajet/${route.id}`}>...</Link>
+              </Button>
             </TableCell>
           </TableRow>
         ))}
