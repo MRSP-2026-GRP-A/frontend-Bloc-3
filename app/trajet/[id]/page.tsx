@@ -1,192 +1,198 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Train, Moon, Sun, Leaf, ArrowLeft, CircleDot } from "lucide-react";
+import { ArrowLeft, Train, Moon, Sun, Leaf, Clock, Ruler, Building2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { TripDetail } from "@/app/types/routes";
+import { formatDuration, co2Avion } from "@/app/lib/utils";
+import StopsTimeline from "@/app/components/StopsTimeline";
 
-type Route = {
-  id: number;
-  line_name: string;
-  depart: string;
-  arrive: string;
-  heure_depart: number;
-  heure_arrive: number;
-  distance: number;
-  operateur: string;
-  pays: string[];
-  frequence: string;
-  actif: boolean;
-};
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default function TrajetDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<TripDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-function duree(hd: number, ha: number) {
-  const diff = ha >= hd ? ha - hd : 24 - hd + ha;
-  const h = Math.floor(diff);
-  const m = Math.round((diff - h) * 60);
-  return `${h}h ${m.toString().padStart(2, "0")}m`;
-}
+  useEffect(() => {
+    const apiUrl = process.env.API_URL ?? "http://localhost:8000";
+    fetch(`${apiUrl}/api/trajets/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Trajet introuvable (HTTP ${res.status})`);
+        return res.json();
+      })
+      .then((json) => {
+        setData(json);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [id]);
 
-function pad(n: number) {
-  return n.toString().padStart(2, "0");
-}
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32 text-slate-400" role="status" aria-live="polite">
+        <svg
+          className="animate-spin w-5 h-5 mr-2"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+        </svg>
+        Chargement du trajet…
+      </div>
+    );
+  }
 
-function formatHeure(h: number) {
-  return `${pad(Math.floor(h))}:${pad(Math.round((h % 1) * 60))}`;
-}
+  if (error || !data) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 flex flex-col gap-4">
+        <div className="rounded-lg bg-red-50 border border-red-200 px-5 py-4 text-sm text-red-700" role="alert">
+          <strong>Erreur :</strong> {error ?? "Trajet introuvable."}
+        </div>
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors w-fit"
+        >
+          <ArrowLeft className="w-4 h-4" /> Retour aux trajets
+        </Link>
+      </div>
+    );
+  }
 
-function isNuit(hd: number) {
-  return hd >= 22 || hd < 6;
-}
+  const { trip, agency, is_night_train, stops } = data;
+  const emissionTrain = parseFloat(trip.emission);
+  const emissionAvion = co2Avion(trip.distance);
+  const saving = Math.round(((emissionAvion - emissionTrain) / emissionAvion) * 100);
 
-function co2Economise(distance: number) {
-  return Math.round(((255 - 14) / 255) * 100);
-}
-
-const demoRoute: Route[] = [
-  {
-    id: 1,
-    line_name: "Durant",
-    depart: "Paul",
-    arrive: "Marseille",
-    heure_depart: 22,
-    heure_arrive: 8,
-    operateur: "ÖBB Nightjet",
-    distance: 165,
-    pays: ["France", "Autriche"],
-    frequence: "Quotidienne",
-    actif: true,
-  },
-  {
-    id: 2,
-    line_name: "Durant",
-    depart: "Paul",
-    arrive: "Marseille",
-    heure_depart: 8,
-    heure_arrive: 22,
-    operateur: "ÖBB JOUR",
-    distance: 999,
-    pays: ["France", "Allemagne"],
-    frequence: "Hebdomadaire",
-    actif: false,
-  },
-  {
-    id: 3,
-    line_name: "Durant",
-    depart: "Paul",
-    arrive: "Marseille",
-    heure_depart: 20,
-    heure_arrive: 14,
-    operateur: "ÖBB VLADIMIR",
-    distance: 667,
-    pays: ["France", "Suisse", "Italie"],
-    frequence: "Bihebdomadaire",
-    actif: true,
-  },
-];
-
-export default async function RouteDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const routeId = parseInt(id, 10);
-  const route = demoRoute.find((r) => r.id === routeId) || demoRoute[0];
-  const nuit = isNuit(route.heure_depart);
-  const depasse = route.heure_arrive < route.heure_depart;
+  // Détecter si le train arrive le lendemain
+  const depH = trip?.departure_time ? parseInt(trip.departure_time.split(":")[0]) : 0;
+  const arrH = trip?.arrival_time ? parseInt(trip.arrival_time.split(":")[0]) : 0;
+  const nextDay = arrH < depH;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
+      {/* Retour */}
       <Link
         href="/"
-        className="flex items-center gap-2 text-sm text-muted-foreground w-fit hover:text-foreground transition-colors"
+        className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors w-fit"
       >
         <ArrowLeft className="w-4 h-4" />
-        Retour aux routes
+        Retour aux trajets
       </Link>
 
-      <div className="flex justify-between items-start flex-wrap gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-medium">{route.line_name}</h1>
-            {nuit ? (
+      {/* En-tête */}
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl font-semibold text-slate-900">{trip.name}</h1>
+            {is_night_train ? (
               <Badge className="bg-indigo-950 text-indigo-300 rounded-full gap-1">
-                <Moon className="w-3 h-3" /> Nuit
+                <Moon className="w-3 h-3" aria-hidden="true" /> Nuit
               </Badge>
             ) : (
               <Badge className="bg-amber-100 text-amber-700 rounded-full gap-1">
-                <Sun className="w-3 h-3" /> Jour
+                <Sun className="w-3 h-3" aria-hidden="true" /> Jour
               </Badge>
             )}
-            <Badge
-              className={
-                route.actif
-                  ? "bg-green-100 text-green-700 rounded-full gap-1"
-                  : "bg-yellow-100 text-yellow-700 rounded-full gap-1"
-              }
-            >
-              <CircleDot className="w-3 h-3" />
-              {route.actif ? "Actif" : "Retardé"}
-            </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">Géré par {route.operateur}</p>
+          <p className="text-sm text-slate-500 flex items-center gap-1.5">
+            <Building2 className="w-3.5 h-3.5" aria-hidden="true" />
+            {agency.name}
+            <span className="text-slate-300">·</span>
+            <span className="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">{agency.code}</span>
+          </p>
         </div>
       </div>
 
-      <div className="border rounded-lg p-6">
-        <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-4">Itinéraire</p>
+      {/* Itinéraire principal */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <p className="text-xs text-slate-400 uppercase tracking-wide font-medium mb-5">Itinéraire</p>
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-2xl font-medium">{route.depart}</p>
-            <p className="text-sm text-muted-foreground mt-1">{formatHeure(route.heure_depart)}</p>
+          {/* Départ */}
+          <div className="flex flex-col gap-0.5">
+            <p className="text-2xl font-semibold text-slate-900">{trip.origin}</p>
+            <p className="text-lg font-mono text-slate-600">{trip.departure_time?.slice(0, 5) ?? "—"}</p>
           </div>
 
-          <div className="flex-1 flex flex-col items-center px-4">
-            <span className="text-xs text-muted-foreground mb-2">{duree(route.heure_depart, route.heure_arrive)}</span>
+          {/* Ligne du milieu */}
+          <div className="flex-1 flex flex-col items-center px-4 gap-1">
+            <span className="text-xs text-slate-400">{formatDuration(trip.duration)}</span>
             <div className="w-full flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full border-2 border-muted-foreground shrink-0" />
-              <div className="flex-1 h-px bg-border" />
-              <Train className="w-5 h-5 text-muted-foreground" />
-              <div className="flex-1 h-px bg-border" />
-              <div className="w-2 h-2 rounded-full bg-muted-foreground shrink-0" />
+              <div className="w-2 h-2 rounded-full border-2 border-slate-400 shrink-0" aria-hidden="true" />
+              <div className="flex-1 h-px bg-slate-200" />
+              <Train className="w-5 h-5 text-slate-400" aria-hidden="true" />
+              <div className="flex-1 h-px bg-slate-200" />
+              <div className="w-2 h-2 rounded-full bg-slate-800 shrink-0" aria-hidden="true" />
             </div>
-            <span className="text-xs text-muted-foreground mt-2">Direct</span>
+            <span className="text-xs text-slate-400">{stops.length} arrêts</span>
           </div>
 
-          <div className="text-right">
-            <p className="text-2xl font-medium">{route.arrive}</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              {formatHeure(route.heure_arrive)}
-              {depasse && " +1"}
+          {/* Arrivée */}
+          <div className="flex flex-col gap-0.5 text-right">
+            <p className="text-2xl font-semibold text-slate-900">{trip.destination}</p>
+            <p className="text-lg font-mono text-slate-600">
+              {trip.arrival_time?.slice(0, 5) ?? "—"}
+              {nextDay && <span className="text-xs text-slate-400 ml-1">+1</span>}
             </p>
           </div>
         </div>
       </div>
 
+      {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Distance", value: `${route.distance.toLocaleString()} km` },
-          { label: "Durée", value: duree(route.heure_depart, route.heure_arrive) },
-          { label: "Opérateur", value: route.operateur },
-          { label: "Fréquence", value: route.frequence },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-muted rounded-md p-4">
-            <p className="text-xs text-muted-foreground mb-1">{label}</p>
-            <p className="text-xl font-medium">{value}</p>
+          {
+            icon: <Ruler className="w-4 h-4 text-slate-400" />,
+            label: "Distance",
+            value: `${trip.distance.toLocaleString()} km`,
+          },
+          { icon: <Clock className="w-4 h-4 text-slate-400" />, label: "Durée", value: formatDuration(trip.duration) },
+          { icon: <Building2 className="w-4 h-4 text-slate-400" />, label: "Opérateur", value: agency.code },
+          { icon: <Leaf className="w-4 h-4 text-green-500" />, label: "CO₂ train", value: `${emissionTrain} kg` },
+        ].map(({ icon, label, value }) => (
+          <div key={label} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col gap-2">
+            <div className="flex items-center gap-1.5">
+              {icon}
+              <span className="text-xs text-slate-400 uppercase tracking-wide">{label}</span>
+            </div>
+            <span className="text-xl font-semibold text-slate-900">{value}</span>
           </div>
         ))}
       </div>
 
-      <div className="bg-muted rounded-md p-4 flex items-center gap-3">
-        <Leaf className="w-5 h-5 text-green-600 shrink-0" />
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">CO₂ économisé vs avion</p>
-          <p className="text-xl font-medium text-green-600">-{co2Economise(route.distance)}%</p>
+      {/* Empreinte carbone */}
+      <div className="bg-green-50 border border-green-200 rounded-xl p-5 flex items-center gap-4">
+        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+          <Leaf className="w-5 h-5 text-green-600" aria-hidden="true" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-green-900">Impact environnemental</p>
+          <p className="text-xs text-green-700 mt-0.5">
+            Ce trajet en train émet <strong>{emissionTrain} kg CO₂</strong> par passager, contre environ{" "}
+            <strong>{emissionAvion} kg</strong> en avion sur la même distance.
+          </p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="text-2xl font-bold text-green-600">−{saving}%</p>
+          <p className="text-xs text-green-600">d`&apos;`émissions</p>
         </div>
       </div>
 
-      <div className="border rounded-lg p-5">
-        <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-3">Pays traversés</p>
-        <div className="flex gap-2 flex-wrap">
-          {route.pays.map((p) => (
-            <span key={p} className="text-sm px-3 py-1 rounded-full border text-foreground">
-              {p}
-            </span>
-          ))}
+      {/* Arrêts */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">Arrêts</p>
+          <span className="text-xs text-slate-400">{stops.length} gares</span>
         </div>
+        <StopsTimeline stops={stops} />
       </div>
     </div>
   );
