@@ -1,17 +1,25 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/app/lib/utils"; // Utilitaire classique pour fusionner les classes
+import { cn } from "@/app/lib/utils";
 
 const FILTERS = [
   { id: "all", label: "Toutes les routes" },
   { id: "day", label: "Trains de jour" },
   { id: "night", label: "Trains de nuit" },
-  // ... tes autres filtres
 ];
 
-export default function RouteFilters() {
+interface RouteFiltersProps {
+  onFilterChange: (filterId: string) => void;
+}
+
+export default function RouteFilters({ onFilterChange }: RouteFiltersProps) {
   const [activeFilter, setActiveFilter] = useState("all");
+
+  const handleFilterClick = (filterId: string) => {
+    setActiveFilter(filterId);
+    onFilterChange(filterId);
+  };
 
   return (
     <div className="flex gap-3 items-center">
@@ -21,13 +29,13 @@ export default function RouteFilters() {
         return (
           <Button
             key={filter.id}
-            onClick={() => setActiveFilter(filter.id)}
-            variant={isSelected ? "default" : "outline"} // Default = Noir, Outline = Bordure grise
+            onClick={() => handleFilterClick(filter.id)}
+            variant={isSelected ? "default" : "outline"}
             className={cn(
               "rounded-full px-5 h-9 text-xs font-medium transition-all",
               isSelected
-                ? "bg-slate-900 text-white hover:bg-slate-800" // Noir profond
-                : "border-slate-200 text-slate-600 hover:bg-slate-50", // Look gris clair
+                ? "bg-slate-900 text-white hover:bg-slate-800"
+                : "border-slate-200 text-slate-600 hover:bg-slate-50",
             )}
           >
             {filter.label}

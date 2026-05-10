@@ -44,6 +44,7 @@ pnpm dev
 pnpm build
 pnpm start
 pnpm lint
+pnpm test:e2e
 ```
 
 ## Structure du projet
