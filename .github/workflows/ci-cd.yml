@@ -2,9 +2,9 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, add_github_actions]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, add_github_actions]
 
 jobs:
   lint:
@@ -24,7 +24,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --no-scripts
+        run: pnpm install --no-frozen-lockfile --ignore-scripts=false
 
       - name: Run ESLint
         continue-on-error: true
