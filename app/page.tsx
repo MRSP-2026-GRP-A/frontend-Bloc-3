@@ -53,12 +53,19 @@ export default function Home() {
     <div className="max-w-screen-2xl mx-auto px-8 sm:px-10 lg:px-16 py-8 flex flex-col gap-7">
       <div className="flex justify-between">
         <div className="flex flex-col">
-          <b>Routes Européennes</b>
-          <p>Surveiller et suivre les liaisons ferroviaires internationales.</p>
+          <h1 className="text-2xl">Routes Européennes</h1>
+          <h2>Surveiller et suivre les liaisons ferroviaires internationales.</h2>
         </div>
-        <div className="flex flew-row justify-around">
+        <div className="flex flex-row justify-around">
+          {/* Le label est masqué visuellement mais lu par les lecteurs d'écran */}
+          <label htmlFor="search-rail" className="sr-only">
+            Rechercher une gare, un trajet ou un opérateur
+          </label>
+
           <Input
-            placeholder="Gare,Trajet,Operateur..."
+            id="search-rail" // Important : l'id doit correspondre au htmlFor du label
+            className="bg-white"
+            placeholder="Gare, Trajet, Operateur..."
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
           />

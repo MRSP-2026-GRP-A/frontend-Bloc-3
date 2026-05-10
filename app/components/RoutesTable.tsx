@@ -49,9 +49,9 @@ export default function RoutesTable({ routes }: { routes: Trip[] }) {
     }
   };
   return (
-    <Table className="shadow-xl inset-shadow-xs">
+    <Table className="shadow-xl inset-shadow-xs bg-white">
       <TableCaption>La liste de toutes nos routes en bdd.</TableCaption>
-      <TableHeader className="w-full">
+      <TableHeader className="w-full bg-[#767676]">
         <TableRow>
           <TableHead className="">Nom du trajet</TableHead>
           <TableHead className="w-1/6">Depart→ Arrive</TableHead>
@@ -62,7 +62,7 @@ export default function RoutesTable({ routes }: { routes: Trip[] }) {
           <TableHead className="text-right!"> Voir le trajet</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody className="w-full">
+      <TableBody className="w-full ">
         {paginatedRoutes.map((route) => {
           const departureHour = extractHour(route.departure_time);
           const isNight = departureHour >= 22 || departureHour < 6;
@@ -88,7 +88,7 @@ export default function RoutesTable({ routes }: { routes: Trip[] }) {
               <TableCell>{formatDuration(route.duration)}</TableCell>
               <TableCell className=" text-green-500">🍃{(route.distance * 0.255).toFixed(2)} kg</TableCell>
               <TableCell className="text-right!">
-                <Button className="rounded-full" asChild>
+                <Button className="rounded-full" asChild aria-label="Voir le détails du trajet">
                   <Link href={`/trajet/${route.id_trip}`}>...</Link>
                 </Button>
               </TableCell>
