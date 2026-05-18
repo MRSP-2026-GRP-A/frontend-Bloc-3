@@ -35,7 +35,7 @@ jobs:
         run: pnpm lint
 
       - name: Test E2E
-        run: pnpm test:e2e -- --update-snapshots
+        run: pnpm test:e2e --update-snapshots
 
       - name: Build
         run: pnpm build

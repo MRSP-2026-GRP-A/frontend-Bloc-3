@@ -33,13 +33,13 @@ pnpm exec playwright install
 ## Lancer le projet en local
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
 ## Lancer les test
 ```bash
 npx playwright test --update-snapshots
-pnpm run test:e2e
+pnpm test:e2e
 ```
 
 Ensuite, ouvre [http://localhost:3000](http://localhost:3000).
@@ -47,11 +47,11 @@ Ensuite, ouvre [http://localhost:3000](http://localhost:3000).
 ## Scripts disponibles
 
 ```bash
-pnpm run dev
-pnpm run build
-pnpm run start
-pnpm run lint
-pnpm run test:e2e
+pnpm dev
+pnpm build
+pnpm start
+pnpm lint
+pnpm test:e2e
 ```
 
 ## Structure du projet
