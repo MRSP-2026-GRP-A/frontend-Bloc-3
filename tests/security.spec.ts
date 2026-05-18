@@ -38,7 +38,7 @@ test.describe("Sécurité : Injections & XSS", () => {
     });
 
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(500);
 
     expect(dialogs).toHaveLength(0);

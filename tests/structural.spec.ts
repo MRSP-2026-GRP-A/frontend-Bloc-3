@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Structurel : Sémantique HTML", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
   });
 
   test("la balise <main> est unique", async ({ page }) => {

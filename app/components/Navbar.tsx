@@ -16,7 +16,6 @@ const NAV_LINKS = [
   { name: "Trajets", href: "/" },
   { name: "Statistiques", href: "/statistiques" },
   { name: "Supervision", href: "/supervision" },
-  { name: "Documentation", href: "/documentation" },
 ];
 
 export default function Navbar() {

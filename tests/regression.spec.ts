@@ -94,7 +94,7 @@ test.describe("Non-régression : Liens de navigation", () => {
   test("les hrefs de la navbar ne changent pas", async ({ page }) => {
     await setupMocks(page);
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
 
     const links = page.locator("nav a");
     const count = await links.count();
@@ -111,7 +111,7 @@ test.describe("Non-régression : Liens de navigation", () => {
   test("le nombre de colonnes de la table ne change pas", async ({ page }) => {
     await setupMocks(page);
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
 
     const columns = await page.locator("thead th").count();
     expect(String(columns)).toMatchSnapshot("table-columns-count.txt");
@@ -120,7 +120,7 @@ test.describe("Non-régression : Liens de navigation", () => {
   test("les labels des boutons de filtre ne changent pas", async ({ page }) => {
     await setupMocks(page);
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
 
     const buttons = page.locator("main button");
     const count = await buttons.count();
