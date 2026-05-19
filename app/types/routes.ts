@@ -35,3 +35,24 @@ export type TripDetail = {
   is_night_train: boolean;
   stops: Stop[];
 };
+
+export type ApiStatsResponse = {
+  nb_total_trips: number;
+  nb_day_trips: number;
+  nb_night_trips: number;
+  nb_operators: number;
+  trips_by_operator: Record<string, number>;
+};
+
+export type OperatorStat = {
+  operateur: string;
+  total: number;
+};
+
+export type StatsData = {
+  total: number;
+  jour: number;
+  nuit: number;
+  nbOperateurs: number;
+  parOperateur: OperatorStat[];
+};

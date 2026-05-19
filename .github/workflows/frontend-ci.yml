@@ -8,33 +8,29 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Recupere le repo
         uses: actions/checkout@v4
       
-      - name: Setup pnpm
+      - name: Installe pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      - name: Setup Node
+      - name: Installe Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "pnpm"
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
-      - name: Install
+      - name: Install toutes les dependances du projet
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright
+      - name: Installe Playwright avec ses dependances
         run: pnpm exec playwright install --with-deps
 
-      - name: Lint
+      - name: Lance ESLint
         run: pnpm lint
 
       - name: Test E2E

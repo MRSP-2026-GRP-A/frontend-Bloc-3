@@ -53,13 +53,27 @@ export default function RoutesTable({ routes }: { routes: Trip[] }) {
       <TableCaption>La liste de toutes nos routes en bdd.</TableCaption>
       <TableHeader className="w-full bg-[#767676]">
         <TableRow>
-          <TableHead className="">Nom du trajet</TableHead>
-          <TableHead className="w-1/6">Depart→ Arrive</TableHead>
-          <TableHead className="w-2/6">Type</TableHead>
-          <TableHead className="w-2/6">Operateur</TableHead>
-          <TableHead className="w-3/6">Durée</TableHead>
-          <TableHead className="w-3/6">Co2 économisés</TableHead>
-          <TableHead className="text-right!"> Voir le trajet</TableHead>
+          <TableHead className="" scope="col">
+            Nom du trajet
+          </TableHead>
+          <TableHead className="w-1/6" scope="col">
+            Depart→ Arrive
+          </TableHead>
+          <TableHead className="w-2/6" scope="col">
+            Type
+          </TableHead>
+          <TableHead className="w-2/6" scope="col">
+            Operateur
+          </TableHead>
+          <TableHead className="w-3/6" scope="col">
+            Durée
+          </TableHead>
+          <TableHead className="w-3/6" scope="col">
+            Co2 économisés
+          </TableHead>
+          <TableHead className="text-right!" scope="col">
+            Voir le trajet
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody className="w-full ">
@@ -81,15 +95,28 @@ export default function RoutesTable({ routes }: { routes: Trip[] }) {
                       : "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200" // Style Jour
                   }
                 >
-                  {isNight ? "🌙 Nuit" : "☀️ Jour"}
+                  {isNight ? (
+                    <>
+                      <span aria-hidden>🌙</span> Nuit
+                      <span className="sr-only">Type: Nuit</span>
+                    </>
+                  ) : (
+                    <>
+                      <span aria-hidden>☀️</span> Jour
+                      <span className="sr-only">Type: Jour</span>
+                    </>
+                  )}
                 </Badge>
               </TableCell>
               <TableCell>{route.agency_name ?? `Opérateur ${route.id_agency}`}</TableCell>
               <TableCell>{formatDuration(route.duration)}</TableCell>
               <TableCell className=" text-green-500">🍃{(route.distance * 0.255).toFixed(2)} kg</TableCell>
               <TableCell className="text-right!">
-                <Button className="rounded-full" asChild aria-label="Voir le détails du trajet">
-                  <Link href={`/trajet/${route.id_trip}`}>...</Link>
+                <Button className="rounded-full" asChild aria-label="Voir le trajet">
+                  <Link href={`/trajet/${route.id_trip}`}>
+                    <span aria-hidden>Voir</span>
+                    <span className="sr-only">Voir le trajet</span>
+                  </Link>
                 </Button>
               </TableCell>
             </TableRow>

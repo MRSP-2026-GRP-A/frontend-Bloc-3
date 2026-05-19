@@ -1,28 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-type ApiStatsResponse = {
-  nb_total_trips: number;
-  nb_day_trips: number;
-  nb_night_trips: number;
-  nb_operators: number;
-  trips_by_operator: Record<string, number>;
-};
-
-type OperatorStat = {
-  operateur: string;
-  total: number;
-};
-
-type StatsData = {
-  total: number;
-  jour: number;
-  nuit: number;
-  nbOperateurs: number;
-  parOperateur: OperatorStat[];
-};
-
+import { ApiStatsResponse, StatsData } from "@/app/types/routes";
+ 
 const API_BASE_URL = process.env.API_URL ?? "http://localhost:8000";
 
 function buildStatsData(payload: ApiStatsResponse): StatsData {
@@ -37,7 +17,6 @@ function buildStatsData(payload: ApiStatsResponse): StatsData {
   };
 }
 
-// Graphique en anneau SVG simple (sans lib externe)
 function DonutChart({ jour, nuit }: { jour: number; nuit: number }) {
   const total = jour + nuit;
   const r = 60;
@@ -48,7 +27,6 @@ function DonutChart({ jour, nuit }: { jour: number; nuit: number }) {
   const nuitFrac = nuit / total;
   const jourDash = circ * jourFrac;
   const nuitDash = circ * nuitFrac;
-  // offset : on commence à -90° (top)
   const startOffset = circ * 0.25;
   const nuitOffset = startOffset;
   const jourOffset = startOffset - nuitDash;
