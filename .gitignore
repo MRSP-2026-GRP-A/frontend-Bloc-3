@@ -49,4 +49,8 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 
+# tests: ignore subfolders but keep root files
+/tests/*/
+/tests/*/**
+
 .env
